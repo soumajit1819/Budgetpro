@@ -25,6 +25,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
+
+interface SavingsData {
+  month: string;
+  savings: number;
+}
+
 const chartConfig = {
   savings: {
     label: "Savings",
@@ -34,19 +40,20 @@ const chartConfig = {
 
 export default function BarSave() {
   const currentYear = new Date().getFullYear();
-  const [year, setYear] = useState(currentYear);
-  const [data, setData] = useState([]);
-  const [availableYears, setAvailableYears] = useState([]);
+  const [year, setYear] = useState<number>(currentYear);
+  const [data, setData] = useState<SavingsData[]>([]);
+  const [availableYears, setAvailableYears] = useState<number[]>([]);
 
   // fetch chart data for selected year
-  const fetchData = async (selectedYear) => {
+  const fetchData = async (selectedYear: number) => {
     try {
-      const res = await axios.get("/api/savings-trend"); // API returns all months
-      const allData = res.data || [];
+      const res = await axios.get("/api/savings-trend");
+      const allData: SavingsData[] = res.data || [];
 
       // get only selected year
       const filteredData = allData.filter((item) => {
-        return item.month.endsWith(String(selectedYear).slice(2)); // "Jan 26" → check last 2 digits
+        const yearSuffix = String(selectedYear).slice(-2);
+        return item.month.endsWith(yearSuffix); // "Jan 26" → check last 2 digits
       });
 
       setData(filteredData);
@@ -59,16 +66,16 @@ export default function BarSave() {
   const fetchAvailableYears = async () => {
     try {
       const res = await axios.get("/api/savings-trend");
-      const allData = res.data || [];
+      const allData: SavingsData[] = res.data || [];
 
-      const yearsSet = new Set();
+      const yearsSet = new Set<number>();
       allData.forEach((item) => {
         const yearPart = item.month.split(" ")[1]; // "Jan 26" → "26"
-        const fullYear = "20" + yearPart; // convert to 2026 etc
+        const fullYear = "20" + yearPart; 
         yearsSet.add(Number(fullYear));
       });
 
-      const sortedYears = Array.from(yearsSet).sort((a, b) => b - a); // descending
+      const sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
       setAvailableYears(sortedYears);
     } catch (err) {
       console.error("Error fetching available years:", err);
@@ -93,15 +100,19 @@ export default function BarSave() {
 
         {/* Year Selector */}
         <select
-          className="border rounded-md px-2 py-1 text-sm mt-2 sm:mt-0"
+          className="border rounded-md px-2 py-1 text-sm mt-2 sm:mt-0 text-black"
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
         >
-          {availableYears.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
+          {availableYears.length > 0 ? (
+            availableYears.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))
+          ) : (
+            <option value={currentYear}>{currentYear}</option>
+          )}
         </select>
       </CardHeader>
 
