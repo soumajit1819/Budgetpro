@@ -3,8 +3,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+// ডাটার টাইপ ডিফাইন করা ভালো প্র্যাকটিস
+interface ProgressData {
+  category: string;
+  budget: number;
+  spent: number;
+  percent: number;
+}
+
 export default function CategoryProgress({ refresh = false }) {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<ProgressData[]>([]);
 
   const getCategoryProgress = async () => {
     try {
@@ -14,12 +22,13 @@ export default function CategoryProgress({ refresh = false }) {
       const budgets = budgetRes.data;
       const expenses = expenseRes.data;
 
-      const budgetByCategory = budgets.reduce((acc, item) => {
+      // টাইপ ফিক্স করা হয়েছে এখানে
+      const budgetByCategory = budgets.reduce((acc: Record<string, number>, item: any) => {
         acc[item.category] = (acc[item.category] || 0) + item.amount;
         return acc;
       }, {});
 
-      const spentByCategory = expenses.reduce((acc, item) => {
+      const spentByCategory = expenses.reduce((acc: Record<string, number>, item: any) => {
         acc[item.category] = (acc[item.category] || 0) + item.amount;
         return acc;
       }, {});
@@ -40,7 +49,6 @@ export default function CategoryProgress({ refresh = false }) {
     }
   };
 
-  // ✅ ALWAYS same dependency array
   useEffect(() => {
     getCategoryProgress();
   }, [refresh]);
@@ -48,13 +56,8 @@ export default function CategoryProgress({ refresh = false }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       {data.map((item, index) => (
-        <div
-          key={index}
-          className="bg-white p-6 rounded-3xl shadow border"
-        >
-          <h2 className="text-2xl font-semibold mb-4">
-            {item.category}
-          </h2>
+        <div key={index} className="bg-white p-6 rounded-3xl shadow border">
+          <h2 className="text-2xl font-semibold mb-4">{item.category}</h2>
 
           <div className="flex justify-between mb-1">
             <span className="font-bold">{item.percent}%</span>
