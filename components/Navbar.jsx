@@ -17,8 +17,8 @@ export default function Navbar() {
       
       {/* Logo Section */}
       <div className="flex items-center gap-2">
-        <Image src="/Images/logo1.png" width={30} height={30} alt="logo1" />
-        <Image src="/Images/logo2.png" width={90} height={90} alt="logo2" />
+        <Image src="/images/logo1.png" width={30} height={30} alt="logo1" />
+        <Image src="/images/logo2.png" width={90} height={90} alt="logo2" />
       </div> 
       
       

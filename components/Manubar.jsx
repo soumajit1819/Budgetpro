@@ -8,7 +8,7 @@ function MenuBar() {
   const [open, setOpen] = useState(false);
 
   const menuItems = [
-    { name: "Income", path: "/income" },
+    { name: "Income", path: "/overview" },
     { name: "Budget", path: "/budget" },
     { name: "Expenses", path: "/expenses" },
     { name: "Savings", path: "/savings" },
