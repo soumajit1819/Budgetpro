@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "components/Piechart.tsx", "app/expenses/page.jsx", "components/ExpensesButton.tsx", "app/savings/page.jsx", "components/goals/GoalCard.jsx", "components/monthexpense", "components/income/IncomeTable.jsx"  ],
   "exclude": ["node_modules"]
 }

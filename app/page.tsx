@@ -1,65 +1,178 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useRef } from "react";
+import Chart from "chart.js/auto";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+
+import {
+  SignInButton,
+  SignUpButton,
+  SignedOut,
+} from '@clerk/nextjs'
 
 export default function Home() {
+
+  const { isSignedIn, isLoaded } = useUser();
+  const router = useRouter();
+
+  // Chart refs
+  const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null);
+
+  // --------------------------
+  // Redirect after login
+  // --------------------------
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.push('/overview');
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  // --------------------------
+  // Chart initialization
+  // --------------------------
+  useEffect(() => {
+    const ctx = chartRef.current;
+
+    if (!ctx) return;
+
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.destroy();
+    }
+    
+    chartInstanceRef.current = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Food", "Transport", "Entertainment", "Bills"],
+        datasets: [{
+          label: "Spending",
+          data: [300, 150, 100, 200],
+          backgroundColor: ["#6366F1", "#22C55E", "#FACC15", "#EF4444"],
+        }],
+      },
+    });
+
+    // Cleanup function — LOGOUT FIX
+    return () => {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+        chartInstanceRef.current = null;
+      }
+    };
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <>
+      {/* Hero Section */}
+      <header className="relative">
+        <div className="w-full">
+          <nav className="w-[80%] mx-auto px-6 py-4 flex justify-between items-center">
+            <Image src="/images/logo.png" width={60} height={50} alt="logo" />
+            <div className="space-x-5">
+              <SignedOut>
+                <SignInButton>
+                  <span className="bg-sky-500 hover:bg-sky-300 p-3 text-white rounded-xl">Login</span>
+                </SignInButton>
+                <SignUpButton >
+                  <span className="bg-sky-500 hover:bg-sky-300 p-3 text-white rounded-xl">Sign Up</span>
+                </SignUpButton>
+              </SignedOut>
+            </div>
+          </nav>
+        </div>
+
+        <div className="bg-white shadow relative overflow-hidden bg-cover bg-center w-[80%] h-80 mx-auto rounded-lg"
+          style={{ backgroundImage: "url('/images/land1.jpg')" }}>
+          <div className="max-w-7xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center justify-between">
+            <div className="max-w-lg animate-fadeInLeft">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                Track Your Money, Control Your Budget
+              </h1>
+              <p className="text-lg text-gray-600 mb-6">
+                A simple personal finance tracker that helps you manage expenses,
+                set budgets, and achieve your financial goals.
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Features Section */}
+      <section className="py-16 bg-gray-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Key Features</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition-transform hover:-translate-y-1">
+              <h3 className="text-xl font-semibold mb-3">Expense Tracking</h3>
+              <p className="text-gray-600">
+                Easily log and categorize your daily expenses for better money management.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition-transform hover:-translate-y-1">
+              <h3 className="text-xl font-semibold mb-3">Budget Setting</h3>
+              <p className="text-gray-600">
+                Set monthly or yearly budgets and stay on track with smart alerts.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition-transform hover:-translate-y-1">
+              <h3 className="text-xl font-semibold mb-3">Charts & Reports</h3>
+              <p className="text-gray-600">
+                Visualize your income and expenses with interactive charts and summaries.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-16 text-center">
+        <div className="max-w-5xl mx-auto px-6 animate-fadeIn">
+          <h2 className="text-3xl font-bold mb-6">Why Choose Our Tracker?</h2>
+          <ul className="text-gray-700 space-y-3">
+            <li>✔ Save money with better expense awareness</li>
+            <li>✔ Understand your spending habits</li>
+            <li>✔ Set and achieve financial goals</li>
+            <li>✔ Stress-free money management</li>
+          </ul>
+        </div>
+
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+          src="/images/land2.jpg"
+          width={1200}
+          height={600}
+          alt="land2"
+          className="w-[80%] h-96 mx-auto mt-10 rounded-lg shadow-lg object-top"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      </section>
+
+      {/* Chart Section */}
+      <section className="py-16 bg-gray-100 text-center">
+        <h2 className="text-3xl font-bold mb-6">See Your Spending in Action</h2>
+        <canvas ref={chartRef} id="demoChart" className="mx-auto w-60 h-60"></canvas>
+      </section>
+
+      {/* Footer Section */}
+      <footer className="bg-gray-900 text-gray-300 pt-12 pb-6 mt-10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-3">FinanceTracker</h2>
+            <p className="text-sm text-gray-400">
+              Smart tools to manage your expenses and grow better financial habits.
+            </p>
+          </div>
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="border-t border-gray-700 mt-10 pt-4 text-center text-sm text-gray-400">
+          © {new Date().getFullYear()} FinanceTracker — All Rights Reserved.
         </div>
-      </main>
-    </div>
+      </footer>
+    </>
   );
 }
