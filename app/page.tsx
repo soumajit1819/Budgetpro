@@ -18,8 +18,8 @@ export default function Home() {
   const router = useRouter();
 
   // Chart refs
-  const chartRef = useRef(null);
-  const chartInstanceRef = useRef(null);
+  const chartRef = useRef<HTMLCanvasElement | null>(null);
+  const chartInstanceRef = useRef<Chart | null>(null);
 
   // --------------------------
   // Redirect after login
@@ -41,7 +41,7 @@ export default function Home() {
     if (chartInstanceRef.current) {
       chartInstanceRef.current.destroy();
     }
-    
+
     chartInstanceRef.current = new Chart(ctx, {
       type: "doughnut",
       data: {
